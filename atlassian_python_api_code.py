@@ -11,11 +11,21 @@ try:
         password=password,
         cloud=True
     )
+    print(confluence.__dir__())
+
     # Connection successful
     print("Successfully connected to Confluence.")
-    # Perform further operations on Confluence if needed
-    # ...
+
+    print(confluence.get_page_space(page_id=393559))
+
+#    # Get all pages
+#    pages = confluence.get_all_pages()
+#
+#    # Iterate over the pages and print their titles
+#    for page in pages:
+#        print(page['title'])
+
 except Exception as e:
-    # Connection failed
-    print(f"Failed to connect to Confluence. Error: {str(e)}")
+    # Connection failed or other error occurred
+    print(f"Failed to connect to Confluence or encountered an error. Error: {str(e)}")
 
