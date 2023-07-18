@@ -11,19 +11,31 @@ try:
         password=password,
         cloud=True
     )
-    print(confluence.__dir__())
 
     # Connection successful
     print("Successfully connected to Confluence.")
 
-    print(confluence.get_page_space(page_id=393559))
+    page_id = 393559  # ID of the page you want to update or create
 
-#    # Get all pages
-#    pages = confluence.get_all_pages()
-#
-#    # Iterate over the pages and print their titles
-#    for page in pages:
-#        print(page['title'])
+    # Prepare the page content in Confluence Storage Format (e.g., Markdown)
+    page_content = """
+    <h2>New Page Title</h2>
+    <p>This is the content of the new page.</p>
+    """
+
+    # Update or create the page
+    result = confluence.update_or_create(
+        parent_id = page_id,
+        title='New Page Title',
+        body=page_content,
+        representation='storage',
+        full_width = False
+    )
+
+    if result:
+        print(f"Page with ID {result['id']} has been updated or created successfully.")
+    else:
+        print("Failed to update or create the page.")
 
 except Exception as e:
     # Connection failed or other error occurred
