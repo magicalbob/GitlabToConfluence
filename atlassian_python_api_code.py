@@ -16,20 +16,19 @@ try:
     print("Successfully connected to Confluence.")
 
     page_id = 393559  # ID of the page you want to update or create
+    page_title = 'README.md'
 
-    # Prepare the page content in Confluence Storage Format (e.g., Markdown)
-    page_content = """
-    <h2>New Page Title</h2>
-    <p>This is the content of the new page.</p>
-    """
+    # Read the contents of the local file 'README.md'
+    with open('README.md', 'r') as file:
+        page_content = file.read()
 
     # Update or create the page
     result = confluence.update_or_create(
-        parent_id = page_id,
-        title='New Page Title',
+        parent_id=page_id,
+        title=page_title,
         body=page_content,
         representation='storage',
-        full_width = False
+        full_width=False
     )
 
     if result:
