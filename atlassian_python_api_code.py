@@ -4,8 +4,28 @@ import json
 import requests
 from atlassian import Confluence
 
-username = os.environ.get('CONFLUENCE_MAIL')
-password = os.environ.get('CONFLUENCE_API')
+
+def convert_gitlab_to_confluence(input_file, output_file):
+    with open(input_file, 'r') as file:
+        gitlab_text = file.read()
+
+    # Convert GitLab Markdown to Confluence markup
+    confluence_text = gitlab_to_confluence(gitlab_text)
+
+    with open(output_file, 'w') as file:
+        file.write(confluence_text)
+
+
+def gitlab_to_confluence(gitlab_text):
+    # Perform the necessary conversions from GitLab Markdown to Confluence markup
+    # Customize this function to implement the specific conversion rules you need
+    # Example conversions:
+    confluence_text = gitlab_text.replace('#', 'h1.').replace('##', 'h2.').replace('###', 'h3.')
+    confluence_text = confluence_text.replace('**', '*').replace('__', '*')
+    confluence_text = confluence_text.replace('_', '+').replace('`', '{{').replace('```', '{code}')
+
+    return confluence_text
+
 
 # Read the configuration from 'config.json'
 with open('config.json', 'r') as config_file:
@@ -13,6 +33,9 @@ with open('config.json', 'r') as config_file:
 
 confluence_url = config['confluence_url']
 products = config['products']
+
+username = os.environ.get('CONFLUENCE_MAIL')
+password = os.environ.get('CONFLUENCE_API')
 
 try:
     confluence = Confluence(
@@ -48,11 +71,19 @@ try:
 
         print(f"README.md file downloaded and saved for product ID {product_id}.")
 
-        # Update or create the page
+        # Convert GitLab Markdown to Confluence markup
+        confluence_file_path = f"./work/README-{product_id}.txt"
+        convert_gitlab_to_confluence(file_path, confluence_file_path)
+
+        # Read the Confluence markup from the converted file
+        with open(confluence_file_path, 'r') as file:
+            confluence_content = file.read()
+
+        # Update or create the page with the Confluence markup
         result = confluence.update_or_create(
             parent_id=page_id,
             title=page_title,
-            body=page_content,
+            body=confluence_content,
             representation='storage',
             full_width=False
         )
