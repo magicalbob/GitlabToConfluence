@@ -12,6 +12,7 @@ with open('config.json', 'r') as config_file:
     config = json.load(config_file)
 
 confluence_url = config['confluence_url']
+products = config['products']
 
 try:
     confluence = Confluence(
@@ -24,33 +25,35 @@ try:
     # Connection successful
     print("Successfully connected to Confluence.")
 
-    page_id = 393559  # ID of the page you want to update or create
-    page_title = 'README.md'
+    for product in products:
+        product_id = product['productId']
+        page_id = product['pageId']
+        page_title = 'README.md'
 
-    # Fetch the file content from GitLab
-    gitlab_token = os.environ.get('GITLAB_TOKEN')
-    gitlab_file_url = f"https://gitlab.com/api/v4/projects/46187091/repository/files/README.md?private_token={gitlab_token}&ref=main"
-    response = requests.get(gitlab_file_url)
-    response.raise_for_status()
-    gitlab_file_content = response.json()['content']
+        # Fetch the file content from GitLab
+        gitlab_token = os.environ.get('GITLAB_TOKEN')
+        gitlab_file_url = f"https://gitlab.com/api/v4/projects/{product_id}/repository/files/README.md?private_token={gitlab_token}&ref=main"
+        response = requests.get(gitlab_file_url)
+        response.raise_for_status()
+        gitlab_file_content = response.json()['content']
 
-    # Decode the file content from base64
-    import base64
-    page_content = base64.b64decode(gitlab_file_content).decode('utf-8')
+        # Decode the file content from base64
+        import base64
+        page_content = base64.b64decode(gitlab_file_content).decode('utf-8')
 
-    # Update or create the page
-    result = confluence.update_or_create(
-        parent_id=page_id,
-        title=page_title,
-        body=page_content,
-        representation='storage',
-        full_width=False
-    )
+        # Update or create the page
+        result = confluence.update_or_create(
+            parent_id=page_id,
+            title=page_title,
+            body=page_content,
+            representation='storage',
+            full_width=False
+        )
 
-    if result:
-        print(f"Page with ID {result['id']} has been updated or created successfully.")
-    else:
-        print("Failed to update or create the page.")
+        if result:
+            print(f"Page with ID {result['id']} has been updated or created successfully for product ID {product_id}.")
+        else:
+            print(f"Failed to update or create the page for product ID {product_id}.")
 
 except Exception as e:
     # Connection failed or other error occurred

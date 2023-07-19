@@ -1,1 +1,6 @@
-{ "confluence_url": "https://ellisbs.atlassian.net" }
+{ 
+  "confluence_url": "https://ellisbs.atlassian.net",
+  "products": [
+    { "productId": 46187091, "pageId": 393559 }
+  ]
+}
