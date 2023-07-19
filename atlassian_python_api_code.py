@@ -14,12 +14,19 @@ def convert_gitlab_to_confluence(input_file, output_file):
         gitlab_text = file.readlines()
 
     IN_TABLE = False
+    in_code_block = False
     confluence_lines = []
 
     for line in gitlab_text:
         line = line.strip()
 
-        if IN_TABLE:
+        if in_code_block:
+            if line.startswith('```'):
+                confluence_lines.append('</code>')
+                in_code_block = False
+            else:
+                confluence_lines.append(line)
+        elif IN_TABLE:
             if line.startswith('+---') or line.startswith('|'):
                 if line.startswith('|'):
                     columns = line.split('|')[1:-1]  # Exclude the empty elements before and after the table content
@@ -34,10 +41,8 @@ def convert_gitlab_to_confluence(input_file, output_file):
                 confluence_lines.append(process_line(line))
         else:
             if line.startswith('```'):
-                if len(confluence_lines) > 0 and confluence_lines[-1].startswith('</code>'):
-                    confluence_lines.append('</code>')
-                else:
-                    confluence_lines.append('<code class="language-" style="white-space: pre;">')
+                confluence_lines.append('<code class="language-" style="white-space: pre;">')
+                in_code_block = True
             elif line.startswith('+---') or line.startswith('|'):
                 confluence_lines.append('<table>')
                 IN_TABLE = True
@@ -54,7 +59,7 @@ def convert_gitlab_to_confluence(input_file, output_file):
                 confluence_lines.append(process_line(line))
 
     # Check if there is an unclosed code block at the end
-    if confluence_lines[-1] != '</code>':
+    if in_code_block:
         confluence_lines.append('</code>')
 
     # Check if there is an unclosed table at the end
@@ -121,6 +126,9 @@ try:
             confluence_content = file.read()
 
         # Update or create the page with the Confluence markup
+        print(f"page_id {page_id}")
+        print(f"page_title {page_title}")
+        print(f"confluence_content {confluence_content}")
         result = confluence.update_or_create(
             parent_id=page_id,
             title=page_title,
@@ -137,3 +145,5 @@ try:
 except Exception as e:
     # Connection failed or other error occurred
     print(f"Failed to connect to Confluence or encountered an error. Error: {str(e)}")
+
+
