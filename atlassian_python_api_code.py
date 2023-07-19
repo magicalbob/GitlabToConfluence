@@ -1,12 +1,19 @@
 import os
+import json
 from atlassian import Confluence
 
 username = os.environ.get('CONFLUENCE_MAIL')
 password = os.environ.get('CONFLUENCE_API')
 
+# Read the configuration from 'config.json'
+with open('config.json', 'r') as config_file:
+    config = json.load(config_file)
+
+confluence_url = config['confluence_url']
+
 try:
     confluence = Confluence(
-        url='https://ellisbs.atlassian.net',
+        url=confluence_url,
         username=username,
         password=password,
         cloud=True
