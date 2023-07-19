@@ -4,28 +4,30 @@ import json
 import requests
 from atlassian import Confluence
 
+def process_line(input_line):
+    if input_line.startswith("###"):
+        output_line = f"<h3>{input_line[3:]}</h3>"
+    elif input_line.startswith("##"):
+        output_line = f"<h2>{input_line[2:]}</h2>"
+    elif input_line.startswith("#"):
+        output_line = f"<h1>{input_line[1:]}</h1>"
+    else:
+        output_line = input_line
+    
+    return output_line
 
 def convert_gitlab_to_confluence(input_file, output_file):
     with open(input_file, 'r') as file:
-        gitlab_text = file.read()
+        gitlab_text = file.readlines()
 
-    # Convert GitLab Markdown to Confluence markup
-    confluence_text = gitlab_to_confluence(gitlab_text)
+    # Process each line of GitLab Markdown
+    confluence_lines = [process_line(line.strip()) for line in gitlab_text]
+
+    # Convert the processed lines to a single string
+    confluence_text = '\n'.join(confluence_lines)
 
     with open(output_file, 'w') as file:
         file.write(confluence_text)
-
-
-def gitlab_to_confluence(gitlab_text):
-    # Perform the necessary conversions from GitLab Markdown to Confluence markup
-    # Customize this function to implement the specific conversion rules you need
-    # Example conversions:
-    confluence_text = gitlab_text.replace('#', 'h1.').replace('##', 'h2.').replace('###', 'h3.')
-    confluence_text = confluence_text.replace('**', '*').replace('__', '*')
-    confluence_text = confluence_text.replace('_', '+').replace('`', '{{').replace('```', '{code}')
-
-    return confluence_text
-
 
 # Read the configuration from 'config.json'
 with open('config.json', 'r') as config_file:
