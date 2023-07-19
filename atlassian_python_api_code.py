@@ -21,24 +21,24 @@ def convert_gitlab_to_confluence(input_file, output_file):
 
         if IN_TABLE:
             if line.startswith('+---') or line.startswith('|'):
-                if line.startswith('+---'):
-                    confluence_lines.append('</table>')
-                    IN_TABLE = False
-                else:
+                if line.startswith('|'):
                     columns = line.split('|')[1:-1]  # Exclude the empty elements before and after the table content
                     columns = [column.strip() for column in columns]
                     if columns:
-                        confluence_lines.append('<tr>')
                         html_columns = [f'<td>{column}</td>' for column in columns]
                         html_table_row = ''.join(html_columns)
                         confluence_lines.append(html_table_row)
-                        confluence_lines.append('</tr>')
             else:
                 confluence_lines.append('</table>')
                 IN_TABLE = False
                 confluence_lines.append(process_line(line))
         else:
-            if line.startswith('+---') or line.startswith('|'):
+            if line.startswith('```'):
+                if len(confluence_lines) > 0 and confluence_lines[-1].startswith('</code>'):
+                    confluence_lines.append('</code>')
+                else:
+                    confluence_lines.append('<code class="language-" style="white-space: pre;">')
+            elif line.startswith('+---') or line.startswith('|'):
                 confluence_lines.append('<table>')
                 IN_TABLE = True
                 if line.startswith('|'):
@@ -52,6 +52,10 @@ def convert_gitlab_to_confluence(input_file, output_file):
                         confluence_lines.append('</tr>')
             else:
                 confluence_lines.append(process_line(line))
+
+    # Check if there is an unclosed code block at the end
+    if confluence_lines[-1] != '</code>':
+        confluence_lines.append('</code>')
 
     # Check if there is an unclosed table at the end
     if IN_TABLE:
@@ -133,4 +137,3 @@ try:
 except Exception as e:
     # Connection failed or other error occurred
     print(f"Failed to connect to Confluence or encountered an error. Error: {str(e)}")
-
