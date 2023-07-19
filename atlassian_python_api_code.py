@@ -14,14 +14,30 @@ def convert_gitlab_to_confluence(input_file, output_file):
     with open(input_file, 'r') as file:
         gitlab_text = file.readlines()
 
-    # Process each line of GitLab Markdown
-    confluence_lines = [process_line(line.strip()) for line in gitlab_text]
+    code_block_opening = False
+    confluence_lines = []
+
+    for line in gitlab_text:
+        line = line.strip()
+        if line.startswith('```'):
+            if code_block_opening:
+                confluence_lines.append('</code>')
+            else:
+                confluence_lines.append('<code class="language-" style="white-space: pre;">')
+            code_block_opening = not code_block_opening
+        else:
+            confluence_lines.append(process_line(line))
+
+    # Check if there is an unclosed code block at the end
+    if code_block_opening:
+        confluence_lines.append('</code>')
 
     # Convert the processed lines to a single string
     confluence_text = '\n'.join(confluence_lines)
 
     with open(output_file, 'w') as file:
         file.write(confluence_text)
+
 
 # Read the configuration from 'config.json'
 with open('config.json', 'r') as config_file:
