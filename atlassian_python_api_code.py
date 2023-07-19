@@ -1,5 +1,7 @@
+#!/usr/bin/env python3
 import os
 import json
+import requests
 from atlassian import Confluence
 
 username = os.environ.get('CONFLUENCE_MAIL')
@@ -25,9 +27,16 @@ try:
     page_id = 393559  # ID of the page you want to update or create
     page_title = 'README.md'
 
-    # Read the contents of the local file 'README.md'
-    with open('README.md', 'r') as file:
-        page_content = file.read()
+    # Fetch the file content from GitLab
+    gitlab_token = os.environ.get('GITLAB_TOKEN')
+    gitlab_file_url = f"https://gitlab.com/api/v4/projects/46187091/repository/files/README.md?private_token={gitlab_token}&ref=main"
+    response = requests.get(gitlab_file_url)
+    response.raise_for_status()
+    gitlab_file_content = response.json()['content']
+
+    # Decode the file content from base64
+    import base64
+    page_content = base64.b64decode(gitlab_file_content).decode('utf-8')
 
     # Update or create the page
     result = confluence.update_or_create(
