@@ -15,6 +15,7 @@ def convert_gitlab_to_confluence(input_file, output_file):
         gitlab_text = file.readlines()
 
     code_block_opening = False
+    table_opening = False
     confluence_lines = []
 
     for line in gitlab_text:
@@ -25,12 +26,35 @@ def convert_gitlab_to_confluence(input_file, output_file):
             else:
                 confluence_lines.append('<code class="language-" style="white-space: pre;">')
             code_block_opening = not code_block_opening
+        elif line.startswith('+-') and not table_opening:
+            confluence_lines.append('<table>')
+            table_opening = True
+        elif table_opening and not line.startswith('|'):
+            confluence_lines.append('</table>')
+            table_opening = False
+            confluence_lines.append(process_line(line))
+        elif line.startswith('|'):
+            columns = line.split('|')[1:-1]  # Exclude the empty elements before and after the table content
+            columns = [column.strip() for column in columns]
+            if columns:
+                if not confluence_lines[-1].startswith('<tr>'):
+                    confluence_lines.append('<tr>')
+                html_columns = [f'<td>{column}</td>' for column in columns]
+                html_table_row = ''.join(html_columns)
+                confluence_lines.append(html_table_row)
+                confluence_lines.append('</tr>')
+        elif line.startswith('+') or line.startswith('|'):
+            continue  # Skip lines starting with '+' or '|'
         else:
             confluence_lines.append(process_line(line))
 
     # Check if there is an unclosed code block at the end
     if code_block_opening:
         confluence_lines.append('</code>')
+
+    # Check if there is an unclosed table at the end
+    if table_opening:
+        confluence_lines.append('</table>')
 
     # Convert the processed lines to a single string
     confluence_text = '\n'.join(confluence_lines)
