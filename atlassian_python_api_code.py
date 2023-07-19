@@ -5,7 +5,13 @@ import requests
 from atlassian import Confluence
 
 def process_line(input_line):
-    if input_line.startswith("###"):
+    if input_line.startswith("######"):
+        output_line = f"<h6>{input_line[6:]}</h6>"
+    elif input_line.startswith("#####"):
+        output_line = f"<h5>{input_line[5:]}</h5>"
+    elif input_line.startswith("####"):
+        output_line = f"<h4>{input_line[4:]}</h4>"
+    elif input_line.startswith("###"):
         output_line = f"<h3>{input_line[3:]}</h3>"
     elif input_line.startswith("##"):
         output_line = f"<h2>{input_line[2:]}</h2>"
