@@ -123,7 +123,16 @@ try:
 
         # Read the Confluence markup from the converted file
         with open(confluence_file_path, 'r') as file:
-            confluence_content = file.read()
+            confluence_lines = file.readlines()
+        
+        # Wrap lines starting with '<td>' in '<tr>' tags
+        wrapped_lines = []
+        for line in confluence_lines:
+            if line.startswith('<td>'):
+                line = f'<tr>{line}</tr>'
+            wrapped_lines.append(line)
+        
+        confluence_content = ''.join(wrapped_lines)
 
         # Update or create the page with the Confluence markup
         print(f"page_id {page_id}")
