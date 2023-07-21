@@ -7,7 +7,6 @@ from atlassian import Confluence
 
 def process_line(input_line):
     output_line = markdown.markdown(input_line)
-    
     return output_line
 
 def convert_gitlab_to_confluence(input_file, output_file):
@@ -38,7 +37,6 @@ def convert_gitlab_to_confluence(input_file, output_file):
     with open(output_file, 'w') as file:
         file.write(confluence_text)
 
-
 # Read the configuration from 'config.json'
 with open('config.json', 'r') as config_file:
     config = json.load(config_file)
@@ -60,14 +58,17 @@ try:
     # Connection successful
     print("Successfully connected to Confluence.")
 
+    # Fetch the branch from the config or default to 'main'
+    branch = config.get('branch', 'main')
+
     for product in products:
         product_id = product['productId']
         page_id = product['pageId']
         page_title = 'README.md'
 
-        # Fetch the file content from GitLab
+        # Fetch the file content from GitLab using the specified branch
         gitlab_token = os.environ.get('GITLAB_TOKEN')
-        gitlab_file_url = f"https://gitlab.com/api/v4/projects/{product_id}/repository/files/README.md?private_token={gitlab_token}&ref=main"
+        gitlab_file_url = f"https://gitlab.com/api/v4/projects/{product_id}/repository/files/README.md?private_token={gitlab_token}&ref={branch}"
         response = requests.get(gitlab_file_url)
         response.raise_for_status()
         gitlab_file_content = response.json()['content']
