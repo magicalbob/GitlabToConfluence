@@ -1,6 +1,7 @@
 { 
   "confluence_url": "https://ellisbs.atlassian.net",
   "products": [
-    { "productId": 46187091, "pageId": 393559 }
+    { "product": "Dynamics365", "productId": 46187091, "pageId": 393559 },
+    { "product": "AnotherProject", "productId": 47916591, "pageId": 1867777 }
   ]
 }
