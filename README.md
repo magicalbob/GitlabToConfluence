@@ -1,6 +1,8 @@
 atlassian_python_api_code.py
 ============================
 
+This is a tool for where you have people, like Product Owners, who need to see README.md files - but you don't want to pay for them to have a gitlab license! It copies README.md files to your Confluence.
+
 Takes a `./config.json` file like this:
 
 ``` 
