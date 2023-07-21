@@ -7,7 +7,7 @@ Takes a `./config.json` file like this:
 { 
   "confluence_url": "https://ellisbs.atlassian.net",
   "products": [
-    { "productId": 46187091, "pageId": 393559 }
+    { "product": "Dynamic365", "productId": 46187091, "pageId": 393559 }
   ]
 }
 ```

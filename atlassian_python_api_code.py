@@ -62,9 +62,10 @@ try:
     branch = config.get('branch', 'main')
 
     for product in products:
+        product_name = product['product']
         product_id = product['productId']
         page_id = product['pageId']
-        page_title = 'README.md'
+        page_title = f'{product_name} README.md'
 
         # Fetch the file content from GitLab using the specified branch
         gitlab_token = os.environ.get('GITLAB_TOKEN')
