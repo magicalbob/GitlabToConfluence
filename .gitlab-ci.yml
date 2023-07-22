@@ -1,0 +1,29 @@
+stages:
+ - test
+ - scan
+
+test_job:
+  stage: test
+  tags:
+    - linux
+  script:
+    - sudo apt-get update
+    - sudo apt-get install -y python3-dev python3-pip
+    - sh testscript.sh
+  artifacts:
+    paths:
+      - coverage.xml
+  variables:
+    GIT_STRATEGY: clone
+
+scan_job:
+  stage: scan
+  tags:
+    - linux
+  script:
+    - sh scan_job.sh
+  dependencies:
+    - test_job
+  variables:
+    GIT_STRATEGY: clone
+
