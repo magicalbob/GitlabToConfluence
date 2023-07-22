@@ -1,6 +1,8 @@
 stages:
  - test
  - scan
+ - build
+ - package
 
 test_job:
   stage: test
@@ -36,3 +38,33 @@ scan_job:
   variables:
     GIT_STRATEGY: clone
 
+build:
+  stage: build
+  tags:
+    - linux
+  script:
+    - sudo apt-get update
+    - sudo apt-get install -y python3-dev python3-pip
+    - pip3 install -r requirement.txt
+    - cd src
+    - python3 setup.py sdist bdist_wheel
+  artifacts:
+    paths:
+      - dist/*.tar.gz
+      - dist/*.whl
+
+publish:
+  stage: publish
+  tags:
+    - linux
+  script:
+    - sudo apt-get update
+    - sudo apt-get install -y python3-dev python3-pip
+    - pip install twine
+    - ~/.local/bin/twine upload --repository-url https://nexus.ellisbs.co.uk/repository/pypi-hosted/ --username $PYPI_USERNAME --password $PYPI_PASSWORD dist/*
+  artifacts:
+    paths:
+      - dist/*.tar.gz
+      - dist/*.whl
+  dependencies:
+    - build
