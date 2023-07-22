@@ -25,7 +25,7 @@ scan_job:
     - sudo apt-get install -y unzip default-jre
     - pushd ~
     - curl -o /tmp/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip
-    - unzip /tmp/sonar-scanner.zip
+    - unzip -n /tmp/sonar-scanner.zip
     - popd
     - ~/sonar-scanner-4.8.0.2856/bin/sonar-scanner
   dependencies:
