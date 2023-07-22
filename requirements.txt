@@ -2,3 +2,6 @@ requests==2.31.0
 urllib3==1.26.13
 markdown==3.4.3
 atlassian-python-api==3.39.0
+sdist
+bdist_wheel
+twine
