@@ -41,6 +41,13 @@ try:
         import base64
         page_content = base64.b64decode(gitlab_file_content).decode('utf-8')
 
+        # Save the file in the ./work/ directory
+        file_path = f"./work/README-{product_id}.md"
+        with open(file_path, 'w') as file:
+            file.write(page_content)
+
+        print(f"README.md file downloaded and saved for product ID {product_id}.")
+
         # Update or create the page
         result = confluence.update_or_create(
             parent_id=page_id,
