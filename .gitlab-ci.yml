@@ -21,7 +21,13 @@ scan_job:
   tags:
     - linux
   script:
-    - docker run -ti -v ${PWD}:/usr/src sonarsource/sonar-scanner-cli
+    - sudo apt-get update
+    - sudo apt-get install -y unzip
+    - pushd ~
+    - curl -o /tmp/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip
+    - unzip /tmp/sonar-scanner.zip
+    - popd
+    - ~/sonar-scanner-4.8.0.2856/bin/sonar-scanner
   dependencies:
     - test_job
   artifacts:
