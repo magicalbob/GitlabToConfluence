@@ -21,9 +21,12 @@ scan_job:
   tags:
     - linux
   script:
-    - sh scan_job.sh
+    - docker run -ti -v ${PWD}:/usr/src sonarsource/sonar-scanner-cli
   dependencies:
     - test_job
+  artifacts:
+    paths:
+      - coverage.xml
   variables:
     GIT_STRATEGY: clone
 
