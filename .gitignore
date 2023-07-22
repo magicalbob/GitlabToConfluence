@@ -3,3 +3,4 @@ work/README*.txt
 __pycache__
 .coverage
 coverage.xml
+.scannerwork
