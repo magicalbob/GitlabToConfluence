@@ -2,7 +2,7 @@ stages:
  - test
  - scan
  - build
- - package
+ - publish
 
 test_job:
   stage: test
