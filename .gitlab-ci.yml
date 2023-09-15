@@ -59,8 +59,8 @@ build:
     - python3 setup.py sdist bdist_wheel
   artifacts:
     paths:
-      - dist/*.tar.gz
-      - dist/*.whl
+      - src/dist/*.tar.gz
+      - src/dist/*.whl
 
 publish:
   stage: publish
@@ -76,7 +76,7 @@ publish:
     - ~/.local/bin/twine upload --repository-url https://nexus.ellisbs.co.uk/repository/pypi-hosted/ --username $PYPI_USERNAME --password $PYPI_PASSWORD src/dist/*
   artifacts:
     paths:
-      - dist/*.tar.gz
-      - dist/*.whl
+      - src/dist/*.tar.gz
+      - src/dist/*.whl
   dependencies:
     - build
