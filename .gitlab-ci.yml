@@ -73,7 +73,7 @@ publish:
     - sudo apt-get install -f
     - sudo apt-get install -y python3-dev python3-pip
     - pip install twine
-    - ~/.local/bin/twine upload --repository-url https://nexus.ellisbs.co.uk/repository/pypi-hosted/ --username $PYPI_USERNAME --password $PYPI_PASSWORD dist/*
+    - ~/.local/bin/twine upload --repository-url https://nexus.ellisbs.co.uk/repository/pypi-hosted/ --username $PYPI_USERNAME --password $PYPI_PASSWORD src/dist/*
   artifacts:
     paths:
       - dist/*.tar.gz
