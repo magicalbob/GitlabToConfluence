@@ -4,6 +4,9 @@ stages:
  - build
  - publish
 
+variables:
+  SONAR_SCANNER_VERSION: 4.8.0.2856
+
 test_job:
   stage: test
   tags:
