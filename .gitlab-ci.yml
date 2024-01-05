@@ -6,6 +6,7 @@ stages:
 
 variables:
   SONAR_SCANNER_VERSION: 4.8.0.2856
+  DEBIAN_FRONTEND: noninteractive
 
 test_job:
   stage: test
