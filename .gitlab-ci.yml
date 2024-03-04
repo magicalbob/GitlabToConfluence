@@ -6,7 +6,6 @@ stages:
 
 variables:
   SONAR_SCANNER_VERSION: 5.0.1.3006
-  DEBIAN_FRONTEND: noninteractive
 
 test_job:
   stage: test
@@ -71,6 +70,7 @@ publish:
   tags:
     - linux
   script:
+    - export DEBIAN_FRONTEND=noninteractive
     - sudo apt-get update
     - sudo rm -rf /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock /var/cache/debconf/*.dat /var/cache/apt/archives/lock
     - sudo apt-get install -y keyboard-configuration
