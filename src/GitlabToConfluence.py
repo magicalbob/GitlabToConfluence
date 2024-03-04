@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 import json
 import requests
@@ -8,12 +9,13 @@ def process_line(input_line):
     output_line = markdown.markdown(input_line)
     return output_line
 
-def convert_gitlab_to_confluence(input_file, output_file):
+def convert_gitlab_to_confluence(input_file, output_file, product_id):
     with open(input_file, 'r') as file:
         gitlab_text = file.readlines()
 
     code_block_opening = False
     confluence_lines = []
+    image_attachments = []
 
     for line in gitlab_text:
         line = line.strip()
@@ -24,6 +26,30 @@ def convert_gitlab_to_confluence(input_file, output_file):
                 confluence_lines.append('<code class="language-" style="white-space: pre;">')
             code_block_opening = not code_block_opening
         else:
+            # Check for image references and download/upload them
+            if line.startswith('!['):
+                # Extract image URL from Markdown syntax
+                image_url = line.split('](')[1].split(')')[0]
+                image_name = os.path.basename(image_url)
+                
+                # Download the image from GitLab
+                response = requests.get(image_url)
+                response.raise_for_status()
+                image_data = response.content
+                
+                # Upload the image to Confluence and get attachment ID
+                attachment_id = confluence.attachments.upload(
+                    page_id=page_id,
+                    file=image_data,
+                    title=image_name
+                )['results'][0]['id']
+                
+                # Replace the image reference with Confluence macro
+                line = f'!custom:com.atlassian.confluence.macro.core:image|src=/download/attachments/{product_id}/{attachment_id}|align=center|width=500!'
+
+                # Store attachment ID for later use (if needed)
+                image_attachments.append(attachment_id)
+            
             confluence_lines.append(process_line(line))
 
     # Check if there is an unclosed code block at the end
@@ -35,6 +61,8 @@ def convert_gitlab_to_confluence(input_file, output_file):
 
     with open(output_file, 'w') as file:
         file.write(confluence_text)
+
+    return image_attachments
 
 # Read the configuration from 'config.json'
 with open('config.json', 'r') as config_file:
@@ -86,7 +114,7 @@ try:
 
         # Convert GitLab Markdown to Confluence markup
         confluence_file_path = f"./work/README-{product_id}.txt"
-        convert_gitlab_to_confluence(file_path, confluence_file_path)
+        image_attachments = convert_gitlab_to_confluence(file_path, confluence_file_path, product_id)
 
         # Read the Confluence markup from the converted file
         with open(confluence_file_path, 'r') as file:
@@ -109,4 +137,3 @@ try:
 except Exception as e:
     # Connection failed or other error occurred
     print(f"Failed to connect to Confluence or encountered an error. Error: {str(e)}")
-
