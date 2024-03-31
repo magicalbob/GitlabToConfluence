@@ -71,10 +71,11 @@ publish:
     - linux
   script:
     - export DEBIAN_FRONTEND=noninteractive
+    - export DEBCONF_NONINTERACTIVE_SEEN=true
     - sudo apt-get update
     - sudo rm -rf /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock /var/cache/debconf/*.dat /var/cache/apt/archives/lock
     - sudo apt-get install -y keyboard-configuration
-    - sudo dpkg-reconfigure keyboard-configuration
+    - sudo dpkg-reconfigure --frontend=noninteractive keyboard-configuration
     - sudo dpkg --configure -a
     - sudo apt-get install -f
     - sudo apt-get install -y python3-dev python3-pip
