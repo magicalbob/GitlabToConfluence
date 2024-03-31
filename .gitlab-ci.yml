@@ -38,7 +38,7 @@ scan_job:
     - curl -o /tmp/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip
     - unzip -n /tmp/sonar-scanner.zip
     - popd
-    - ~/sonar-scanner-4.8.0.2856/bin/sonar-scanner
+    - ~/sonar-scanner-${SONAR_SCANNER_VERSION}/bin/sonar-scanner
   dependencies:
     - test_job
   artifacts:
