@@ -75,6 +75,8 @@ publish:
     - sudo apt-get update
     - sudo rm -rf /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock /var/cache/debconf/*.dat /var/cache/apt/archives/lock
     - sudo apt-get install -y keyboard-configuration
+    - echo "keyboard-configuration  keyboard-configuration/layoutcode  string  us" | sudo debconf-set-selections
+    - echo "keyboard-configuration  keyboard-configuration/modelcode   string  pc105" | sudo debconf-set-selections
     - sudo dpkg-reconfigure --frontend=noninteractive keyboard-configuration
     - sudo dpkg --configure -a
     - sudo apt-get install -f
@@ -87,3 +89,4 @@ publish:
       - src/dist/*.whl
   dependencies:
     - build
+
