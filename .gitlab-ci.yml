@@ -72,14 +72,15 @@ publish:
   script:
     - export DEBIAN_FRONTEND=noninteractive
     - export DEBCONF_NONINTERACTIVE_SEEN=true
+    - echo 'keyboard-configuration keyboard-configuration/layoutcode select us' | sudo debconf-set-selections
+    - echo 'keyboard-configuration keyboard-configuration/modelcode select pc105' | sudo debconf-set-selections
+    - echo 'keyboard-configuration keyboard-configuration/variant select English (US)' | sudo debconf-set-selections
+    - echo 'keyboard-configuration keyboard-configuration/optionscode string compose:ralt' | sudo debconf-set-selections
+    - echo 'keyboard-configuration keyboard-configuration/unsupported_layout boolean true' | sudo debconf-set-selections
+    - echo 'keyboard-configuration keyboard-configuration/unsupported_config_layout boolean true' | sudo debconf-set-selections
     - sudo apt-get update
-    - sudo rm -rf /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock /var/cache/debconf/*.dat /var/cache/apt/archives/lock
     - sudo apt-get install -y keyboard-configuration
-    - echo "keyboard-configuration  keyboard-configuration/layoutcode  string  us" | sudo debconf-set-selections
-    - echo "keyboard-configuration  keyboard-configuration/modelcode   string  pc105" | sudo debconf-set-selections
     - sudo dpkg-reconfigure --frontend=noninteractive keyboard-configuration
-    - sudo dpkg --configure -a
-    - sudo apt-get install -f
     - sudo apt-get install -y python3-dev python3-pip
     - pip install twine
     - ~/.local/bin/twine upload --repository-url https://nexus.ellisbs.co.uk/repository/pypi-hosted/ --username $PYPI_USERNAME --password $PYPI_PASSWORD src/dist/*
